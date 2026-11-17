@@ -1,0 +1,521 @@
+diff --git a/src/op_adv_cvt_color.cpp b/src/op_adv_cvt_color.cpp
+--- a/src/op_adv_cvt_color.cpp
++++ b/src/op_adv_cvt_color.cpp
+@@ -30,6 +30,7 @@
+ #include "kernels/common/adv_cvt_color_coefficients.hpp"
+ #include "kernels/device/adv_cvt_color_device.hpp"
+ #include "kernels/host/adv_cvt_color_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ namespace {
+@@ -195,18 +196,22 @@
+                 case COLOR_BGR2YUV:
+                     Kernels::Device::rgb_or_bgr_to_yuv_adv<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                         ImageWrapper<uchar3>(input), ImageWrapper<uchar3>(output), coeff, kDelta);
++                    HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                     break;
+                 case COLOR_RGB2YUV:
+                     Kernels::Device::rgb_or_bgr_to_yuv_adv<uchar3, eSwizzle::XYZW><<<gridSize, blockSize, 0, stream>>>(
+                         ImageWrapper<uchar3>(input), ImageWrapper<uchar3>(output), coeff, kDelta);
++                    HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                     break;
+                 case COLOR_YUV2BGR:
+                     Kernels::Device::yuv_to_rgb_or_bgr_adv<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                         ImageWrapper<uchar3>(input), ImageWrapper<uchar3>(output), coeff, kDelta);
++                    HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                     break;
+                 case COLOR_YUV2RGB:
+                     Kernels::Device::yuv_to_rgb_or_bgr_adv<uchar3, eSwizzle::XYZW><<<gridSize, blockSize, 0, stream>>>(
+                         ImageWrapper<uchar3>(input), ImageWrapper<uchar3>(output), coeff, kDelta);
++                    HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                     break;
+                 default:
+                     throw Exception("Unsupported conversion code.", eStatusType::INVALID_COMBINATION);
+@@ -221,11 +226,13 @@
+                                                                     ImageWrapper<uchar3>, uchar3>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar1>(input), ImageWrapper<uchar3>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 } else {
+                     Kernels::Device::nv12_or_nv21_to_rgb_or_bgr_adv<eSwizzle::XYZW, ImageWrapper<uchar1>,
+                                                                     ImageWrapper<uchar3>, uchar3>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar1>(input), ImageWrapper<uchar3>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 }
+             } else {
+                 if (bgr) {
+@@ -233,11 +240,13 @@
+                                                                     ImageWrapper<uchar4>, uchar4>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar1>(input), ImageWrapper<uchar4>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 } else {
+                     Kernels::Device::nv12_or_nv21_to_rgb_or_bgr_adv<eSwizzle::XYZW, ImageWrapper<uchar1>,
+                                                                     ImageWrapper<uchar4>, uchar4>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar1>(input), ImageWrapper<uchar4>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 }
+             }
+         } else {
+@@ -249,20 +258,24 @@
+                     Kernels::Device::rgb_or_bgr_to_nv12_or_nv21_adv<uchar3, eSwizzle::ZYXW>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar3>(input), ImageWrapper<uchar1>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 } else {
+                     Kernels::Device::rgb_or_bgr_to_nv12_or_nv21_adv<uchar3, eSwizzle::XYZW>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar3>(input), ImageWrapper<uchar1>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 }
+             } else {
+                 if (bgr) {
+                     Kernels::Device::rgb_or_bgr_to_nv12_or_nv21_adv<uchar4, eSwizzle::ZYXW>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar4>(input), ImageWrapper<uchar1>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 } else {
+                     Kernels::Device::rgb_or_bgr_to_nv12_or_nv21_adv<uchar4, eSwizzle::XYZW>
+                         <<<gridSize, blockSize, 0, stream>>>(ImageWrapper<uchar4>(input), ImageWrapper<uchar1>(output),
+                                                              coeff, kDelta, uidx);
++                        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 }
+             }
+         }
+diff --git a/src/op_bilateral_filter.cpp b/src/op_bilateral_filter.cpp
+--- a/src/op_bilateral_filter.cpp
++++ b/src/op_bilateral_filter.cpp
+@@ -34,6 +34,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/bilateral_filter_device.hpp"
+ #include "kernels/host/bilateral_filter_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ BilateralFilter::BilateralFilter() {}
+@@ -75,6 +76,7 @@
+ 
+         Kernels::Device::bilateral_filter<T>
+             <<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, radius, spaceCoeff, colorCoeff);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+     } else if (device == eDeviceType::CPU) {
+         int divisor = std::gcd(4, outputWrapper.height());  // greatest common divisor
+         int dividend = std::gcd((numThreads / divisor), outputWrapper.width());
+diff --git a/src/op_bnd_box.cpp b/src/op_bnd_box.cpp
+--- a/src/op_bnd_box.cpp
++++ b/src/op_bnd_box.cpp
+@@ -35,6 +35,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/bnd_box_device.hpp"
+ #include "kernels/host/bnd_box_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ BndBox::BndBox() {}
+@@ -65,6 +66,7 @@
+             }
+             Kernels::Device::bndbox_kernel<has_alpha, T>
+                 <<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, rects_ptr, n_rects, batchSize, height, width);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             if (n_rects > 0) {
+                 HIP_VALIDATE_NO_ERRORS(hipFreeAsync(rects_ptr, stream));
+             }
+diff --git a/src/op_brightness_contrast.cpp b/src/op_brightness_contrast.cpp
+--- a/src/op_brightness_contrast.cpp
++++ b/src/op_brightness_contrast.cpp
+@@ -31,6 +31,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/brightness_contrast_device.hpp"
+ #include "kernels/host/brightness_contrast_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace {
+ using namespace roccv;
+@@ -98,6 +99,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::brightness_contrast<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, bc_wrappers);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+         case eDeviceType::CPU: {
+diff --git a/src/op_composite.cpp b/src/op_composite.cpp
+--- a/src/op_composite.cpp
++++ b/src/op_composite.cpp
+@@ -27,6 +27,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/composite_device.hpp"
+ #include "kernels/host/composite_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -44,6 +45,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::composite<<<grid, block, 0, stream>>>(fgWrapper, bgWrapper, maskWrapper, outputWrapper);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_convert_to.cpp b/src/op_convert_to.cpp
+--- a/src/op_convert_to.cpp
++++ b/src/op_convert_to.cpp
+@@ -31,6 +31,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/convert_to_device.hpp"
+ #include "kernels/host/convert_to_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -58,6 +59,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::convert_to<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, alpha_ab, beta_ab);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+         case eDeviceType::CPU: {
+diff --git a/src/op_copy_make_border.cpp b/src/op_copy_make_border.cpp
+--- a/src/op_copy_make_border.cpp
++++ b/src/op_copy_make_border.cpp
+@@ -29,6 +29,7 @@
+ #include "core/wrappers/interpolation_wrapper.hpp"
+ #include "kernels/device/copy_make_border_device.hpp"
+ #include "kernels/host/copy_make_border_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -47,6 +48,7 @@
+             dim3 grid_dim((out_desc.width() + block_dim.x - 1) / block_dim.x,
+                           (out_desc.height() + block_dim.y - 1) / block_dim.y, out_desc.batches());
+             Kernels::Device::copy_make_border<<<grid_dim, block_dim, 0, stream>>>(in_desc, out_desc, top, left);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+         case eDeviceType::CPU: {
+diff --git a/src/op_custom_crop.cpp b/src/op_custom_crop.cpp
+--- a/src/op_custom_crop.cpp
++++ b/src/op_custom_crop.cpp
+@@ -29,6 +29,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/custom_crop_device.hpp"
+ #include "kernels/host/custom_crop_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -44,6 +45,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::custom_crop<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, cropRect);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_cvt_color.cpp b/src/op_cvt_color.cpp
+--- a/src/op_cvt_color.cpp
++++ b/src/op_cvt_color.cpp
+@@ -30,6 +30,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/cvt_color_device.hpp"
+ #include "kernels/host/cvt_color_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ CvtColor::CvtColor() {}
+@@ -55,37 +56,44 @@
+             case eColorConversionCode::COLOR_BGR2GRAY:
+                 Kernels::Device::rgb_or_bgr_to_grayscale<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar1, IndexT>(output));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_RGB2GRAY:
+                 Kernels::Device::rgb_or_bgr_to_grayscale<uchar3, eSwizzle::XYZW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar1, IndexT>(output));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_BGR2RGB:
+             case eColorConversionCode::COLOR_RGB2BGR:
+                 Kernels::Device::reorder<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar3, IndexT>(output));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_BGR2YUV:
+                 Kernels::Device::rgb_or_bgr_to_yuv<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar3, IndexT>(output), 128.0f);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_RGB2YUV:
+                 Kernels::Device::rgb_or_bgr_to_yuv<uchar3, eSwizzle::XYZW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar3, IndexT>(output), 128.0f);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_YUV2BGR:
+                 Kernels::Device::yuv_to_rgb_or_bgr<uchar3, eSwizzle::ZYXW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar3, IndexT>(output), 128.0f);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             case eColorConversionCode::COLOR_YUV2RGB:
+                 Kernels::Device::yuv_to_rgb_or_bgr<uchar3, eSwizzle::XYZW><<<gridSize, blockSize, 0, stream>>>(
+                     ImageWrapper<uchar3, IndexT>(input), ImageWrapper<uchar3, IndexT>(output), 128.0f);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+ 
+             default:
+diff --git a/src/op_flip.cpp b/src/op_flip.cpp
+--- a/src/op_flip.cpp
++++ b/src/op_flip.cpp
+@@ -32,6 +32,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/flip_device.hpp"
+ #include "kernels/host/flip_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -46,6 +47,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::flip<FlipType><<<grid, block, 0, stream>>>(inputWrapper, outputWrapper);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_gamma_contrast.cpp b/src/op_gamma_contrast.cpp
+--- a/src/op_gamma_contrast.cpp
++++ b/src/op_gamma_contrast.cpp
+@@ -37,6 +37,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/gamma_contrast_device.hpp"
+ #include "kernels/host/gamma_contrast_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -52,6 +53,7 @@
+                   outputWrapper.batches());
+ 
+         Kernels::Device::gamma_contrast<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, gamma);
++        HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+     } else if (device == eDeviceType::CPU) {
+         Kernels::Host::gamma_contrast(inputWrapper, outputWrapper, gamma);
+     }
+diff --git a/src/op_histogram.cpp b/src/op_histogram.cpp
+--- a/src/op_histogram.cpp
++++ b/src/op_histogram.cpp
+@@ -34,6 +34,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/histogram_device.hpp"
+ #include "kernels/host/histogram_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ Histogram::Histogram() {}
+@@ -94,9 +95,11 @@
+                 ImageWrapper<uchar1> maskWrapper(actual_mask);
+                 Kernels::Device::histogram_kernel<T><<<grid_size, threads_block, shared_mem_size, stream>>>(
+                     inputWrapper, maskWrapper, GenericTensorWrapper<T>(histogram));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             } else {
+                 Kernels::Device::histogram_kernel<T><<<grid_size, threads_block, shared_mem_size, stream>>>(
+                     inputWrapper, GenericTensorWrapper<T>(histogram));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             }
+             break;
+         }
+diff --git a/src/op_non_max_suppression.cpp b/src/op_non_max_suppression.cpp
+--- a/src/op_non_max_suppression.cpp
++++ b/src/op_non_max_suppression.cpp
+@@ -115,6 +115,7 @@
+             Kernels::Device::non_maximum_suppression<<<grid, block, 0, stream>>>(
+                 GenericTensorWrapper<short4>(inputReshaped), GenericTensorWrapper<uint8_t>(outputReshaped),
+                 GenericTensorWrapper<float>(scoresReshaped), numBoxes, scoreThreshold, iouThreshold);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_normalize.cpp b/src/op_normalize.cpp
+--- a/src/op_normalize.cpp
++++ b/src/op_normalize.cpp
+@@ -31,6 +31,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/normalize_device.hpp"
+ #include "kernels/host/normalize_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -54,6 +55,7 @@
+                       outputWrap.batches());
+             Kernels::Device::normalize<ScaleStddev>
+                 <<<grid, block, 0, stream>>>(inputWrap, baseWrap, scaleWrap, outputWrap, global_scale, shift, epsilon);
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+         case eDeviceType::CPU: {
+diff --git a/src/op_reformat.cpp b/src/op_reformat.cpp
+--- a/src/op_reformat.cpp
++++ b/src/op_reformat.cpp
+@@ -29,6 +29,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/reformat_device.hpp"
+ #include "kernels/host/reformat_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -44,6 +45,7 @@
+             dim3 grid((outputWrap.width() + block.x - 1) / block.x, (outputWrap.height() + block.y - 1) / block.y,
+                       outputWrap.batches());
+             Kernels::Device::reformat<Channels, T><<<grid, block, 0, stream>>>(inputWrap, outputWrap);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_remap.cpp b/src/op_remap.cpp
+--- a/src/op_remap.cpp
++++ b/src/op_remap.cpp
+@@ -33,6 +33,7 @@
+ #include "core/wrappers/interpolation_wrapper.hpp"
+ #include "kernels/device/remap_device.hpp"
+ #include "kernels/host/remap_host.hpp"
++#include "core/hip_assert.h"
+ 
+ using namespace roccv::detail;
+ namespace roccv {
+@@ -96,6 +97,7 @@
+                       outputWrapper.batches());
+             Kernels::Device::remap<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, wrappedMapTensor,
+                                                                mapBatchSize, params);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_resize.cpp b/src/op_resize.cpp
+--- a/src/op_resize.cpp
++++ b/src/op_resize.cpp
+@@ -32,6 +32,7 @@
+ #include "kernels/device/resize_device.hpp"
+ #include "kernels/host/resize_host.hpp"
+ #include "operator_types.h"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ 
+@@ -50,6 +51,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::resize<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, scaleX, scaleY);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_rotate.cpp b/src/op_rotate.cpp
+--- a/src/op_rotate.cpp
++++ b/src/op_rotate.cpp
+@@ -30,6 +30,7 @@
+ #include "kernels/device/rotate_device.hpp"
+ #include "kernels/host/rotate_host.hpp"
+ #include "operator_types.h"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ void GetRotationMatrix(double angleDeg, double2 shift, double *mat) {
+@@ -63,6 +64,7 @@
+             dim3 grid((outputWrap.width() + block.x - 1) / block.x, (outputWrap.height() + block.y - 1) / block.y,
+                       outputWrap.batches());
+             Kernels::Device::rotate<<<grid, block, 0, stream>>>(inputWrap, outputWrap, matWrap);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_thresholding.cpp b/src/op_thresholding.cpp
+--- a/src/op_thresholding.cpp
++++ b/src/op_thresholding.cpp
+@@ -30,6 +30,7 @@
+ #include "core/wrappers/image_wrapper.hpp"
+ #include "kernels/device/thresholding_device.hpp"
+ #include "kernels/host/thresholding_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ Threshold::Threshold(eThresholdType threshType, int32_t maxBatchSize)
+@@ -58,23 +59,28 @@
+                 Kernels::Device::binary_generic<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper,
+                                                                             GenericTensorWrapper<double>(thresh),
+                                                                             GenericTensorWrapper<double>(maxVal));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+             case THRESH_BINARY_INV:
+                 Kernels::Device::binary_inv_generic<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper,
+                                                                                 GenericTensorWrapper<double>(thresh),
+                                                                                 GenericTensorWrapper<double>(maxVal));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+             case THRESH_TRUNC:
+                 Kernels::Device::trunc_generic<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper,
+                                                                            GenericTensorWrapper<double>(thresh));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+             case THRESH_TOZERO:
+                 Kernels::Device::tozero_generic<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper,
+                                                                             GenericTensorWrapper<double>(thresh));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+             case THRESH_TOZERO_INV:
+                 Kernels::Device::tozeroinv_generic<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper,
+                                                                                GenericTensorWrapper<double>(thresh));
++                HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+                 break;
+         }
+ 
+diff --git a/src/op_warp_affine.cpp b/src/op_warp_affine.cpp
+--- a/src/op_warp_affine.cpp
++++ b/src/op_warp_affine.cpp
+@@ -29,6 +29,7 @@
+ #include "core/detail/math/math.hpp"
+ #include "kernels/device/warp_affine_device.hpp"
+ #include "kernels/host/warp_affine_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ template <typename T, eBorderType B, eInterpolationType I>
+@@ -44,6 +45,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::warp_affine<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, transform);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
+diff --git a/src/op_warp_perspective.cpp b/src/op_warp_perspective.cpp
+--- a/src/op_warp_perspective.cpp
++++ b/src/op_warp_perspective.cpp
+@@ -30,6 +30,7 @@
+ #include "core/detail/type_traits.hpp"
+ #include "kernels/device/warp_perspective_device.hpp"
+ #include "kernels/host/warp_perspective_host.hpp"
++#include "core/hip_assert.h"
+ 
+ namespace roccv {
+ template <typename T, eBorderType B, eInterpolationType I>
+@@ -46,6 +47,7 @@
+             dim3 grid((outputWrapper.width() + block.x - 1) / block.x, (outputWrapper.height() + block.y - 1) / block.y,
+                       outputWrapper.batches());
+             Kernels::Device::warp_perspective<<<grid, block, 0, stream>>>(inputWrapper, outputWrapper, transform);
++            HIP_VALIDATE_NO_ERRORS(hipGetLastError());
+             break;
+         }
+ 
