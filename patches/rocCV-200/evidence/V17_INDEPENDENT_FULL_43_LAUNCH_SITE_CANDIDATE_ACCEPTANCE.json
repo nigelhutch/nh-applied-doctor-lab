@@ -1,0 +1,26 @@
+{
+  "schema": "DOCTOR_LAB_V17_INDEPENDENT_43_SITE_BUILD_ACCEPTANCE",
+  "decision": "PASS_43_SITES_SOURCE_ROUNDTRIP_FULL_LIBRARY_COMPILE_AND_FLIP_REGRESSION",
+  "git_commit": "54613b57a140bddb16a30fee63c22cf88c24bb7b",
+  "launch_sites_checked": 43,
+  "source_files_modified": 21,
+  "original_Flip_unmodified_sha256": "C0799989BCF3FE8D0C2503993CC6BDB38309622D7A0F3CF3F191008BFC16B24A",
+  "candidate_patch_sha256": "17422028E8B6CA27BCF990A74EEE298F25ED53D14BD8994FAAFF2D6F85058A34",
+  "patch_source_manifest_sha256": "124B9D9D0F418D5D0B435978DCAAF690E5BBD3C48F2CB327A54AC57BC7E1FB54",
+  "built_shared_library_sha256": "542AFA136A5653147BA9B74FBF3571B594DDCA3967F6C92B49860FB279489281",
+  "stage_sha256": {
+    "source": "1E289C03A78644FDAC7D80AACB4BAB08A9F0913D5FD5CD96A877C8FF13B8AD93",
+    "build": "96EE82BCE424E2F009A02D43F2FD65367A67DB72EF5DAFB4E0A061533DF2FA68",
+    "positive": "F6B1DE0BD38FBBD22840527EBD957B8AADA141949E1707CA91CB1950352B06A4"
+  },
+  "Flip_positive_real_gpu_gfx1151": true,
+  "Flip_correct_pixels": 64,
+  "all_43_operators_GPU_runtime_tested": false,
+  "reporter_gfx1036_verified": false,
+  "missing_code_object_tested": false,
+  "upstream_merged_or_confirmed": false,
+  "no_system_installation": true,
+  "ACE_modified": false,
+  "Doctor_V26_modified": false,
+  "verification": "INDEPENDENT_READ_ONLY_RECEIPT_AND_PATCH_AUDIT"
+}
