@@ -1,0 +1,45 @@
+{
+  "schema": "DOCTOR_DEV_LAB_V16C_INDEPENDENT_FLIP_LAUNCH_ERROR_AB",
+  "decision": "PASS_LOCAL_REAL_ROCCV_FLIP_CONTROLLED_INVALID_CONFIGURATION_AB",
+  "method": "identical_2048_thread_test_only_source_injection_gfx1151",
+  "original_v14d_library_receipt_sha256": "CD71544C35B50E3056F58D21777EAEB4F3C4F274991C018088A9D30EAA1EE7BB",
+  "previous_V15_missing_code_object_segfault_sha256": "1D4365627C3E74A830065C07A44448352DAA42D6A2855236045E6299BEB22FD7",
+  "previous_rocCV_positive_GPU_cases": [
+    "1A5D7394A695A91A01DE149F231F6DF2EB147575D462D04E8EBC24161856B00E",
+    "3617C7F8EF5B1B0F347FA9B2C120D0767EA7F8F6BD6499FF62B49172836BB84F"
+  ],
+  "stage_receipts_sha256": {
+    "source": "FE96F4C86F982DB21446CFE8BC51662F0629C4487B1B64589E92AE90C19BDDF2",
+    "build_base": "36FA6F6FCF2632AF75D23BB9C35200FCD6AF18CF0B72A50111AE6CFE6AAFEA78",
+    "build_patch": "79BEF04F56B8205DD68033705499448C43B74FFAF17D4553C2873E1B3907BF46",
+    "negative_base": "64AD5CD8164980BFD1981C4739FCCC0C61D789965EA93ED977E684F2FFCEE75F",
+    "negative_patch": "29DF3C58E7633CB7816CB860DE4700EE76776D54213F09BF65466575C3368801"
+  },
+  "real_GPU": "gfx1151",
+  "GPU_max_threads_per_block": 1024,
+  "injected_threads_per_block": 2048,
+  "baseline_behavior": "returned without exception; immediate HIP error 9",
+  "patched_behavior": "threw roccv Exception for hipErrorInvalidConfiguration",
+  "observed": {
+    "baseline": {
+      "library_sha256": "6685116E7263DD1BC8FC6FF40A8228C3259C44D098C38936241E0DABBA4A91C8",
+      "threw": false,
+      "hip_error": "hipErrorInvalidConfiguration"
+    },
+    "patched": {
+      "library_sha256": "2F1B19473C79BBC4FC447228FA54AF4D90A770C6C2EB1A5AC4C600E96DD310F8",
+      "threw": true,
+      "hip_error": "hipErrorInvalidConfiguration"
+    }
+  },
+  "real_rocCV_Flip_operator_tested": true,
+  "synthetic_missing_code_object_reproduced": false,
+  "reporter_gfx1036_validated": false,
+  "all_other_launch_sites_fixed": false,
+  "upstream_fix_verified": false,
+  "reporter_environment_verified": false,
+  "source_changes_upstream": false,
+  "ACE_modified": false,
+  "Doctor_V26_modified": false,
+  "verification": "INDEPENDENT_RECEIPT_AUDIT_NO_GPU_REEXECUTION"
+}
